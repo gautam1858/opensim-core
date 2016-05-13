@@ -62,6 +62,10 @@ addons:
       - sshpass
 
 before_install:
+  - if  [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
+  - if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
+  - PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE,,}"
+  - echo $PACKAGENAME
 
   ## Ensure that there are no tabs in source code.
   - cd $TRAVIS_BUILD_DIR
