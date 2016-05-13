@@ -167,7 +167,7 @@ install:
   - make -j$NPROC
   - cd ..
   - tar -czf build.tar.gz $BUILD_DIR
-  - split -b 200m -d build.tar.gz build.tar.gz
+  - split -b 200m build.tar.gz build.tar.gz
   - if  [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
   - if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
   - PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
