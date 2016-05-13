@@ -154,3 +154,17 @@ install:
   # Build whatever remains (at least _opensim, tests and examples).
   - make -j$NPROC;
   
+  # Cache build directory in bintray.
+  - BUILD_DIR=$(pwd)
+  - cd $TRAVIS_BUILD_DIR
+  - pwd
+  - git checkout master
+  - VERSION=$(git log -n1 --format="%H")
+  - cd $BUILD_DIR
+  - make -j$NPROC
+  - cd ..
+  - tar -czf build.tar.gz $BUILD_DIR
+  - split -b 200m -d build.tar.gz build.tar.gz
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export PACKAGENAME="${MACHTYPE}_${CC}_${BTYPE,,}"
+  - ls build.tar.gz0* | while read f; do curl -T $f -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 https://api.bintray.com/content/opensim/opensim-core/${PACKAGENAME}/${VERSION}/${PACKAGENAME}/${VERSION}/${f}; done
+  - curl -X POST -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 https://api.bintray.com/content/opensim/opensim-core/${PACKAGENAME}/${VERSION}/publish
