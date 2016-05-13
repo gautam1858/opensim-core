@@ -158,6 +158,7 @@ install:
   - BUILD_DIR=$(pwd)
   - cd $TRAVIS_BUILD_DIR
   - pwd
+  - git fetch
   - git checkout master
   - VERSION=$(git log -n1 --format="%H")
   - cd $BUILD_DIR
