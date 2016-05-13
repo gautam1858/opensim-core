@@ -156,10 +156,12 @@ install:
   
   # Cache build directory in bintray.
   - BUILD_DIR=$(pwd)
+  - echo $BUILD_DIR
   - cd $TRAVIS_BUILD_DIR
   - pwd
-  - git fetch
-  - git checkout master
+  - cd ..
+  - rm -rf opensim-core
+  - git clone --branch master https://github.com/opensim-org/opensim-core.git
   - VERSION=$(git log -n1 --format="%H")
   - cd $BUILD_DIR
   - make -j$NPROC
