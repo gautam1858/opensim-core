@@ -64,7 +64,7 @@ addons:
 before_install:
   - if  [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
   - if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
-  - PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE,,}"
+  - PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
   - echo $PACKAGENAME
 
   ## Ensure that there are no tabs in source code.
