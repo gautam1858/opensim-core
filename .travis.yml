@@ -162,6 +162,7 @@ install:
   - cd ..
   - rm -rf opensim-core
   - git clone --branch master https://github.com/opensim-org/opensim-core.git
+  - cd opensim-core
   - VERSION=$(git log -n1 --format="%H")
   - cd $BUILD_DIR
   - make -j$NPROC
