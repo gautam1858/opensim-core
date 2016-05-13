@@ -170,7 +170,9 @@ install:
   - cd ..
   - tar -czf build.tar.gz $BUILD_DIR
   - split -b 200m -d build.tar.gz build.tar.gz
-  - PACKAGENAME="${MACHTYPE}_${CC}_${BTYPE,,}"
+  - if  [[ "$CC" == *gcc* ]] then export COMPILER=gcc; fi
+  - if  [[ "$CC" == *clang* ]] then export COMPILER=clang; fi
+  - PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE,,}"
   - echo $PACKAGENAME
   - ls build.tar.gz0* | while read f; do curl -T $f -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 https://api.bintray.com/content/opensim/opensim-core/${PACKAGENAME}/${VERSION}/${PACKAGENAME}/${VERSION}/${f}; done
   - curl -X POST -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 https://api.bintray.com/content/opensim/opensim-core/${PACKAGENAME}/${VERSION}/publish
