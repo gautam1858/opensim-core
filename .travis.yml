@@ -62,11 +62,6 @@ addons:
       - sshpass
 
 before_install:
-  - if  [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
-  - if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
-  - PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
-  - echo $PACKAGENAME
-
   ## Ensure that there are no tabs in source code.
   - cd $TRAVIS_BUILD_DIR
   # GREP returns 0 (true) if there are any matches, and
@@ -161,6 +156,7 @@ install:
   - rm -rf opensim-core
   - git clone --branch master https://github.com/opensim-org/opensim-core.git
   - cd opensim-core
+  - git checkout 64dca7cd40275491f09f206d849d80cd6ef381a3
   - VERSION=$(git log -n1 --format="%H")
   - echo $VERSION
   - cd $BUILD_DIR
@@ -172,5 +168,5 @@ install:
   - if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
   - PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
   - echo $PACKAGENAME
-  - ls build.tar.gz0* | while read f; do curl -T $f -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 https://api.bintray.com/content/opensim/opensim-core/${PACKAGENAME}/${VERSION}/${PACKAGENAME}/${VERSION}/${f}; done
+  - ls build.tar.gza* | while read f; do curl -T $f -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 https://api.bintray.com/content/opensim/opensim-core/${PACKAGENAME}/${VERSION}/${PACKAGENAME}/${VERSION}/${f}; done
   - curl -X POST -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 https://api.bintray.com/content/opensim/opensim-core/${PACKAGENAME}/${VERSION}/publish
