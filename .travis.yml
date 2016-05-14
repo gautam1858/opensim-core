@@ -143,9 +143,22 @@ before_install:
   - make -j8
 
 install:
-  - mkdir ~/opensim-core-build && cd ~/opensim-core-build
+  - if  [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
+  - if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
+  - PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
+  - echo $PACKAGENAME
+  - cd ~
+  - curl -fL https://getcli.jfrog.io | sh
+  - ./jfrog bt config --user klshrinidhi --key 440061321dba00a68210b482261154ea58d03f00 --licenses Apache-2.0
+  - ./jfrog bt download-ver opensim/opensim-core/${PACKAGENAME}/64dca7cd40275491f09f206d849d80cd6ef381a3
+  - cat opensim-core-build.tar.gz* > opensim-core-build.tar.gz
+  - tar -xzf opensim-core-build-tar.gz
+  
+  - cd opensim-core-build
+  #- mkdir ~/opensim-core-build && cd ~/opensim-core-build
   # Configure OpenSim.
   - cmake $TRAVIS_BUILD_DIR -DBUILD_JAVA_WRAPPING=$WRAP -DBUILD_PYTHON_WRAPPING=$WRAP -DSWIG_EXECUTABLE=$HOME/swig/bin/swig -DSIMBODY_HOME=~/simbody -DOPENSIM_DEPENDENCIES_DIR=$OPENSIM_DEPENDENCIES_INSTALL_DIR -DCMAKE_INSTALL_PREFIX=$OPENSIM_HOME -DCMAKE_BUILD_TYPE=$BTYPE -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DDOXYGEN_EXECUTABLE=$HOME/doxygen/doxygen-1.8.10/bin/doxygen -DOPENSIM_DOXYGEN_USE_MATHJAX=off -DOPENSIM_SIMBODY_DOXYGEN_LOCATION="https://simtk.org/api_docs/simbody/latest/" -DWITH_BTK:BOOL=ON
+  - make -j$NPROC
 
   # Cache build directory in bintray.
   - BUILD_DIR=$(pwd)
@@ -162,11 +175,7 @@ install:
   - cd $BUILD_DIR
   - make -j$NPROC
   - cd ..
-  - tar -czf build.tar.gz $BUILD_DIR
-  - split -b 200m build.tar.gz build.tar.gz
-  - if  [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
-  - if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
-  - PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
-  - echo $PACKAGENAME
-  - ls build.tar.gza* | while read f; do curl -T $f -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 https://api.bintray.com/content/opensim/opensim-core/${PACKAGENAME}/${VERSION}/${PACKAGENAME}/${VERSION}/${f}; done
+  - tar -czf build.tar.gz opensim-core-build
+  - split -b 200m opensim-core-build.tar.gz opensim-core-build.tar.gz
+  - ls opensim-core-build.tar.gza* | while read f; do curl -T $f -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 https://api.bintray.com/content/opensim/opensim-core/${PACKAGENAME}/${VERSION}/${PACKAGENAME}/${VERSION}/${f}; done
   - curl -X POST -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 https://api.bintray.com/content/opensim/opensim-core/${PACKAGENAME}/${VERSION}/publish
