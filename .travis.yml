@@ -153,6 +153,7 @@ install:
   - ./jfrog bt download-ver opensim/opensim-core/${PACKAGENAME}/64dca7cd40275491f09f206d849d80cd6ef381a3
   - cat opensim-core-build.tar.gz* > opensim-core-build.tar.gz
   - tar -xzf opensim-core-build-tar.gz
+  - if [ ! -d opensim-core-build ]; then mkdir opensim-core-build; fi
   
   - cd opensim-core-build
   #- mkdir ~/opensim-core-build && cd ~/opensim-core-build
