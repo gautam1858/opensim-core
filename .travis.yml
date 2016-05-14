@@ -151,7 +151,7 @@ install:
   - curl -L "https://jfrog.bintray.com/jfrog-cli-go/1.2.0/jfrog-cli-linux-amd64/jfrog" -o jfrog
   - chmod u+x jfrog
   - ./jfrog bt config --user klshrinidhi --key 440061321dba00a68210b482261154ea58d03f00 --licenses Apache-2.0
-  - ./jfrog bt download-ver opensim/opensim-core/${PACKAGENAME}/64dca7cd40275491f09f206d849d80cd6ef381a3 --flat=-true
+  - ./jfrog bt download-ver opensim/opensim-core/${PACKAGENAME}/64dca7cd40275491f09f206d849d80cd6ef381a3 --flat=true
   - cat opensim-core-build.tar.gz* > opensim-core-build.tar.gz
   - tar -xzf opensim-core-build-tar.gz
   - if [ ! -d opensim-core-build ]; then mkdir opensim-core-build; fi
