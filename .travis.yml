@@ -149,10 +149,10 @@ install:
   - URL="https://dl.bintray.com/opensim/opensim-core/${PACKAGENAME}/${BRANCHBASE}"  
   - echo "Looking for opensim/opensim-core/${PACKAGENAME}/${BRANCHBASE}"
   - for i in $LETTERS; do piece=${TARBALL}a$i; curl -L $URL/$piece -o $piece; if [ $(wc -c < $piece) -lt 100 ]; then rm $piece; break; else echo "Downloaded piece $piece"; fi; done
-  - echo "Joining the pieces of cache downloaded"
-  - cat opensim-core-build.tar.gz* > opensim-core-build.tar.gz
-  - echo "Decompressing tarball"
-  - tar -xzf opensim-core-build.tar.gz
+  - if [ -f ${TARBALL}aa ]; then echo "Joining the pieces of cache downloaded"; fi
+  - if [ -f ${TARBALL}aa ]; then cat opensim-core-build.tar.gz* > opensim-core-build.tar.gz; fi
+  - if [ -f ${TARBALL} ]; then echo "Decompressing tarball"; fi
+  - if [ -f ${TARBALL} ]; then tar -xzf opensim-core-build.tar.gz; fi
   - if [ ! -d opensim-core-build ]; then mkdir opensim-core-build; fi
 
   #######################################################################################################################
