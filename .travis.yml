@@ -128,11 +128,42 @@ before_install:
   - make -j8
 
 install:
-  - mkdir ~/opensim-core-build && cd ~/opensim-core-build
+  #######################################################################################################################
+  # Download the cached build directory, if one exists.
+  #######################################################################################################################
+  - echo "Checking for availability of cached build directory on Bintray"
+  - if  [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
+  - if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
+  - PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
+  - cd $TRAVIS_BUILD_DIR
+  - git fetch origin master:master
+  - BRANCHTIP=$(git log -n1 --format='%H')
+  - BRANCHBASE=$(git merge-base master ${BRANCHTIP})
+  - cd ..
+  - find opensim-core -iname '*' | while read f; do touch -m -d"2015-05-18 09:00:00" $f; done
+  - cd opensim-core
+  - git diff --name-only $BRANCHBASE $BRANCHTIP | while read f; do touch $f; done
+  - cd ~
+  - TARBALL=opensim-core-build.tar.gz
+  - LETTERS="a b c d e f g h i j k l m n o p q r s t u v w x y z"
+  - URL="https://dl.bintray.com/opensim/opensim-core/${PACKAGENAME}/${BRANCHBASE}"  
+  - echo "Looking for opensim/opensim-core/${PACKAGENAME}/${BRANCHBASE}"
+  - for i in $LETTERS; do piece=${TARBALL}a$i; curl -L $URL/$piece -o $piece; if [ $(wc -c < $piece) -lt 100 ]; then rm $piece; break; else echo "Downloaded piece $piece"; fi; done
+  - echo "Joining the pieces of cache downloaded"
+  - cat opensim-core-build.tar.gz* > opensim-core-build.tar.gz
+  - echo "Decompressing tarball"
+  - tar -xzf opensim-core-build.tar.gz
+  - if [ ! -d opensim-core-build ]; then mkdir opensim-core-build; fi
+
+  #######################################################################################################################
   # Configure OpenSim.
+  #######################################################################################################################
+  - cd ~/opensim-core-build
   - cmake $TRAVIS_BUILD_DIR -DBUILD_JAVA_WRAPPING=$WRAP -DBUILD_PYTHON_WRAPPING=$WRAP -DSWIG_EXECUTABLE=$HOME/swig/bin/swig -DSIMBODY_HOME=~/simbody -DOPENSIM_DEPENDENCIES_DIR=$OPENSIM_DEPENDENCIES_INSTALL_DIR -DCMAKE_INSTALL_PREFIX=$OPENSIM_HOME -DCMAKE_BUILD_TYPE=$BTYPE -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DDOXYGEN_EXECUTABLE=$HOME/doxygen/doxygen-1.8.10/bin/doxygen -DOPENSIM_DOXYGEN_USE_MATHJAX=off -DOPENSIM_SIMBODY_DOXYGEN_LOCATION="https://simtk.org/api_docs/simbody/latest/" -DWITH_BTK:BOOL=ON
 
+  #######################################################################################################################
   # Build OpenSim.
+  #######################################################################################################################
   # Build java and python C++ wrapper separately to avoid going over the memory limit.
   - if [[ "$WRAP" = "on" ]]; then make -j$NPROC osimTools osimJavaJNI PythonBindings; fi
   # Build whatever remains (at least _opensim, tests and examples).
