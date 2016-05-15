@@ -140,7 +140,7 @@ install:
   - BRANCHTIP=$(git log -n1 --format='%H')
   - BRANCHBASE=$(git merge-base master ${BRANCHTIP})
   - cd ..
-  - find opensim-core -iname '*' | while read f; do touch -m -d"2015-05-18 09:00:00" $f; done
+  - find opensim-core -iname '*' | while read f; do touch -m -t"20150518090000" $f; done
   - cd opensim-core
   - git diff --name-only $BRANCHBASE $BRANCHTIP | while read f; do touch $f; done
   - cd ~
