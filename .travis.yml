@@ -150,13 +150,13 @@ install:
   - cd $TRAVIS_BUILD_DIR
   - git fetch origin master:master
   - BRANCHTIP=$(git log -n1 --format='%H')
+  - echo $BRANCHTIP
   - BRANCHBASE=$(git merge-base master ${BRANCHTIP})
+  - echo $BRANCHBASE
   - cd ..
   - find opensim-core -iname '*' | while read f; do touch -m -d"2015-05-18 09:00:00" $f; done
   - cd opensim-core
   - git diff --name-only $BRANCHBASE $BRANCHTIP | while read f; do touch $f; done
-
-
   - cd ~
   - TARBALL=opensim-core-build.tar.gz
   - LETTERS="a b c d e f g h i j k l m n o p q r s t u v w x y z"
@@ -167,8 +167,6 @@ install:
   - if [ ! -d opensim-core-build ]; then mkdir opensim-core-build; fi
   
   - cd opensim-core-build
-  #- mkdir ~/opensim-core-build && cd ~/opensim-core-build
-  # Configure OpenSim.
   - cmake $TRAVIS_BUILD_DIR -DBUILD_JAVA_WRAPPING=$WRAP -DBUILD_PYTHON_WRAPPING=$WRAP -DSWIG_EXECUTABLE=$HOME/swig/bin/swig -DSIMBODY_HOME=~/simbody -DOPENSIM_DEPENDENCIES_DIR=$OPENSIM_DEPENDENCIES_INSTALL_DIR -DCMAKE_INSTALL_PREFIX=$OPENSIM_HOME -DCMAKE_BUILD_TYPE=$BTYPE -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DDOXYGEN_EXECUTABLE=$HOME/doxygen/doxygen-1.8.10/bin/doxygen -DOPENSIM_DOXYGEN_USE_MATHJAX=off -DOPENSIM_SIMBODY_DOXYGEN_LOCATION="https://simtk.org/api_docs/simbody/latest/" -DWITH_BTK:BOOL=ON
   - make -j$NPROC
 
