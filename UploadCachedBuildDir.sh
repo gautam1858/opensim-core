@@ -11,6 +11,7 @@ echo "---- Compressing build directory into a tarball."
 tar -czf $TARBALL opensim-core-build
 echo "---- Splitting tarball into smaller pieces for upload."
 split -b 200m $TARBALL $TARBALL
+rm $TARBALL
 URL="https://api.bintray.com/content/opensim/opensim-core/${PACKAGENAME}/${MASTERTIP}/${PACKAGENAME}/${MASTERTIP}"
 PIECES=$(ls ${TARBALL}a*)
 for piece in PIECES; do 
@@ -20,4 +21,5 @@ done
 URL="https://api.bintray.com/content/opensim/opensim-core/${PACKAGENAME}/${VERSION}/publish"
 echo "---- Publishing uploaded build directory."
 curl -X POST -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 $URL
+rm ${TARBALL}*
 cd opensim-core-build
