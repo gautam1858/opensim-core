@@ -1,11 +1,11 @@
 set -e
 
-echo "---- Checking for availability of cached build directory on Bintray"
+echo "---- Checking for availability of cached build directory on Bintray."
 if  [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
 if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
 PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
 cd $TRAVIS_BUILD_DIR
-echo "---- Fetching master branch"
+echo "---- Fetching master branch."
 git fetch origin master:master
 BRANCHTIP=$(git log -n1 --format='%H')
 BRANCHBASE=$(git merge-base master ${BRANCHTIP})
@@ -29,12 +29,12 @@ for i in $LETTERS; do
   fi 
 done
 if [ ! -f ${TARBALL}aa ]; then 
-  echo "---- Cache not found"
+  echo "---- Cache not found."
   mkdir opensim-core-build
   return
 fi
-echo "Joining the pieces of cache downloaded"; fi
+echo "Joining the pieces of cache downloaded."; fi
 cat opensim-core-build.tar.gz* > opensim-core-build.tar.gz
-echo "Decompressing tarball"
+echo "Decompressing tarball."
 tar -xzf opensim-core-build.tar.gz
 mkdir opensim-core-build
