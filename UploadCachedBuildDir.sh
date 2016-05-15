@@ -4,6 +4,7 @@ if [ $(git branch | grep '*' | sed 's/^* //') != "master" ]; then
   echo "---- Not caching build directory. Current branch is not master."
   return
 fi
+
 cd $TRAVIS_BUILD_DIR
 MASTERTIP=$(git log -n1 --format="%H")
 cd ${OPENSIM_BUILD_DIR}/..
