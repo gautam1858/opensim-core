@@ -62,6 +62,7 @@ addons:
       - sshpass
 
 before_install:
+
   ## Ensure that there are no tabs in source code.
   - cd $TRAVIS_BUILD_DIR
   # GREP returns 0 (true) if there are any matches, and
@@ -143,30 +144,96 @@ before_install:
   - make -j8
 
 install:
-  - if  [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
-  - if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
-  - PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
-  - echo $PACKAGENAME
-  - cd $TRAVIS_BUILD_DIR
-  - git fetch origin master:master
-  - BRANCHTIP=$(git log -n1 --format='%H')
-  - echo $BRANCHTIP
-  - BRANCHBASE=$(git merge-base master ${BRANCHTIP})
-  - echo $BRANCHBASE
-  - cd ..
-  - find opensim-core -iname '*' | while read f; do touch -m -d"2015-05-18 09:00:00" $f; done
-  - cd opensim-core
-  - git diff --name-only $BRANCHBASE $BRANCHTIP | while read f; do touch $f; done
-  - cd ~
-  - TARBALL=opensim-core-build.tar.gz
-  - LETTERS="a b c d e f g h i j k l m n o p q r s t u v w x y z"
-  - URL="https://dl.bintray.com/opensim/opensim-core/${PACKAGENAME}/${BRANCHBASE}"  
-  - for i in $LETTERS; do piece=${TARBALL}a$i; curl -L $URL/$piece -o $piece; if [ $(wc -c < $piece) -lt 100 ]; then rm $piece; break; fi; done
-  - cat opensim-core-build.tar.gz* > opensim-core-build.tar.gz
-  - tar -xzf opensim-core-build.tar.gz
-  - if [ ! -d opensim-core-build ]; then mkdir opensim-core-build; fi
-  
-  - cd opensim-core-build
+  - mkdir ~/opensim-core-build && cd ~/opensim-core-build
+  # Configure OpenSim.
   - cmake $TRAVIS_BUILD_DIR -DBUILD_JAVA_WRAPPING=$WRAP -DBUILD_PYTHON_WRAPPING=$WRAP -DSWIG_EXECUTABLE=$HOME/swig/bin/swig -DSIMBODY_HOME=~/simbody -DOPENSIM_DEPENDENCIES_DIR=$OPENSIM_DEPENDENCIES_INSTALL_DIR -DCMAKE_INSTALL_PREFIX=$OPENSIM_HOME -DCMAKE_BUILD_TYPE=$BTYPE -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DDOXYGEN_EXECUTABLE=$HOME/doxygen/doxygen-1.8.10/bin/doxygen -DOPENSIM_DOXYGEN_USE_MATHJAX=off -DOPENSIM_SIMBODY_DOXYGEN_LOCATION="https://simtk.org/api_docs/simbody/latest/" -DWITH_BTK:BOOL=ON
-  - make -j$NPROC
 
+  # Build OpenSim.
+  # Build java and python C++ wrapper separately to avoid going over the memory limit.
+  - if [[ "$WRAP" = "on" ]]; then make -j$NPROC osimTools osimJavaJNI PythonBindings; fi
+  # Build whatever remains (at least _opensim, tests and examples).
+  - make -j$NPROC;
+
+script:
+  # Test OpenSim.
+  # TODO On Debug, we need to tell travis not to timeout if it doesn't get
+  # any output for more than 10 minutes. We do this using "travis_wait".
+  #- if [ "$BTYPE" = "Debug" ]; export NO_TIMEOUT="travis_wait"; fi
+  - ctest -j8 --output-on-failure $CTEST_FLAGS --exclude-regex $TESTS_TO_EXCLUDE
+
+  ## Print out valgrind output.
+  - if [ $RUN_VALGRIND ]; then find Testing/Temporary -name "MemoryCheck*" -print | xargs cat; fi
+
+  ## Build doxygen documentation.
+  - if [ "$DOXY" = "on" ]; then make doxygen; fi
+  
+  ## Install OpenSim. Suppress output.
+  - make -j8 install > /dev/null
+
+  ## Test python wrapping.
+  # Add OpenSim libraries to library path.
+  - if [ "$WRAP" = "on" ]; then export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$OPENSIM_HOME/lib/x86_64-linux-gnu:$OPENSIM_DEPENDENCIES_INSTALL_DIR/BTK/lib/btk-0.4dev; fi
+  # Go to the python wrapping package directory.
+  - if [ "$WRAP" = "on" ]; then cd $OPENSIM_HOME/share/doc/OpenSim/python; fi
+  # Run the python tests, verbosely.
+  - if [ "$WRAP" = "on" ]; then nosetests -v; fi
+    
+  ## Upload doxygen to server for viewing.
+  # View resulting doxygen at myosin.sourceforge.net/<pull-request-number>
+  # The `-e "ssh...` is for providing the password andautomatically
+  # accepting the ssh key.
+  # https://sourceforge.net/p/forge/documentation/Project%20Web%20Services/
+  # MYOSIN_SOURCEFORGE_PASSWORD is a hidden environment variable that we set
+  # at https://travis-ci.org/opensim-org/opensim-core/settings.
+  - if [ "$DOXY" = "on" ]; then if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then rsync -az -e "sshpass -p rectusfemoris ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" $OPENSIM_HOME/share/doc/OpenSim/html_developer/ opensim-bot@web.sourceforge.net:/home/project-web/myosin/htdocs/$TRAVIS_PULL_REQUEST; fi; fi
+  # If we're uploading doxygen, we also want to delete old
+  # doxygen files from the server so they don't build up indefinitely.
+  # However, ssh'ing into the server takes a while, so we only do this
+  # randomly (1% of the time).
+  - if [[ "$DOXY" = "on" && "$TRAVIS_PULL_REQUEST" != "false" && $(python -c "import random; print(random.random() < 0.01)") = "True" ]]; then CLEAN_UP_MYOSIN=0; else CLEAN_UP_MYOSIN=1; fi
+  - if [ $CLEAN_UP_MYOSIN = "0" ]; then echo "This build is randomly selected to delete old folders from myosin.sourceforge.net."; fi
+  # Creates an environment at sourceforge that we can ssh into.
+  - if [ $CLEAN_UP_MYOSIN = "0" ]; then sshpass -p rectusfemoris ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null opensim-bot,myosin@shell.sourceforge.net create; fi
+  # Now that the environment is created, we can run a command on the server.
+  # mindepth and maxdepth makes sure that we only look to delete folders
+  # in the htdocs folder, and we don't look at subdirectories.
+  # We only look for folders (`-type d`).
+  # We delete folders older than 30 days (`-mtime +30`).
+  # The "shutdown" command shuts down the ssh environment.
+  - if [ $CLEAN_UP_MYOSIN = "0" ]; then sshpass -p rectusfemoris ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null opensim-bot,myosin@shell.sourceforge.net 'cd /home/project-web/myosin/htdocs && find . -mindepth 1 -maxdepth 1 -type d -mtime +30 | xargs rm -rf && shutdown'; fi
+  
+  # Maximum size of cache is 100 MB.
+  # TODO 100 MB is not big enough. Using default limit of 1 GB for now.
+  #- ccache --max-size 100M
+
+before_cache:
+  # Show cache statistics.
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ccache --show-stats; fi
+
+before_deploy:
+  # Zip up the installation using a file name that identifies where
+  # the binaries were built.
+  - mkdir ~/binstar-packages
+  - ZIPNAME=opensim-core-latest_${TRAVIS_OS_NAME}_${BTYPE}.zip
+  - # Zip up opensim relative to where it's installed.
+  - cd $OPENSIM_HOME/../
+  - zip --recurse-paths --quiet ~/binstar-packages/$ZIPNAME opensim-core
+
+  # Paths in the .bintray.json file are relative to the current directory.
+  - cd ~
+
+deploy:
+  # Uploads to https://bintray.com/chrisdembia/opensim-testing/opensim-core/view
+  #            https://dl.bintray.com/chrisdembia/opensim-testing/
+  # See http://docs.travis-ci.com/user/deployment/bintray/ for help.
+  provider: bintray
+  file: $TRAVIS_BUILD_DIR/doc/.bintray.json
+  user: chrisdembia
+  skip_cleanup: true
+  # API key is encrypted with travis.
+  key: $BINTRAY_API_KEY
+  on:
+    branch: master
+    # Upload for both linux (once) and OSX. Might need to modify the condition
+    # if we change the build matrix.
+    condition: "$DEPLOY = yes"
