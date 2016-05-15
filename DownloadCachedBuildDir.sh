@@ -1,5 +1,10 @@
 set -e
 
+if [ $(git branch | grep '*' | sed 's/^* //') == "master" ]; then 
+  echo "---- Not downloading cache. Current branch is master."
+  return
+fi
+
 echo "---- Checking for availability of cached build directory on Bintray."
 if  [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
 if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
