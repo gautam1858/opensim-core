@@ -28,13 +28,8 @@ env:
     - OPENSIM_DEPENDENCIES_BUILD_DIR=~/opensim_dependencies-build
     - OPENSIM_DEPENDENCIES_INSTALL_DIR=~/opensim_dependencies-install
     - SWIG_VER=3.0.6
-    - USE_CCACHE=1
-    - CCACHE_COMPRESS=1
-    # for Clang to work with ccache.
-    - CCACHE_CPP2=1
 
-cache:
-  - directories: $HOME/.ccache
+cache: false
 
 addons:
   # Dependencies on linux.
@@ -87,17 +82,6 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ln -s /usr/lib/libblas.so ~/lib/libblas.so.3; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/lib; fi
 
-  ## Set up ccache.
-  # Lots of this is borrowed from https://github.com/weitjong/Urho3D/blob/master/.travis.yml.
-  # Put /usr/lib/ccache on the path.
-  - export PATH=$(whereis -b ccache |grep -o '\S*lib\S*'):$PATH
-  # For some reason the Travis CI clang compiler toolchain installation does not
-  # have a symlink in the ccache symlinks directory, so workaround it
-  - ln -s $(which ccache) $HOME/clang && ln -s $(which ccache) $HOME/clang++ && export PATH=$HOME:$PATH
-  # Without the following lines, ccache causes clang to not print in color.
-  - if [[ $CC = clang* ]]; then export CC="$CC -fcolor-diagnostics"; fi;
-  - if [[ $CXX = clang* ]]; then export CXX="$CXX -fcolor-diagnostics"; fi;
-  
   ## Doxygen.
   # Need a doxygen that is more recent than that available through apt-get.
   - if [ "$DOXY" = "on" ]; then mkdir ~/doxygen && cd ~/doxygen; fi
@@ -202,14 +186,6 @@ script:
   # The "shutdown" command shuts down the ssh environment.
   - if [ $CLEAN_UP_MYOSIN = "0" ]; then sshpass -p rectusfemoris ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null opensim-bot,myosin@shell.sourceforge.net 'cd /home/project-web/myosin/htdocs && find . -mindepth 1 -maxdepth 1 -type d -mtime +30 | xargs rm -rf && shutdown'; fi
   
-  # Maximum size of cache is 100 MB.
-  # TODO 100 MB is not big enough. Using default limit of 1 GB for now.
-  #- ccache --max-size 100M
-
-before_cache:
-  # Show cache statistics.
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ccache --show-stats; fi
-
 before_deploy:
   # Zip up the installation using a file name that identifies where
   # the binaries were built.
