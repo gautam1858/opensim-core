@@ -17,7 +17,7 @@ cd ~
 TARBALL=opensim-core-build.tar.gz
 LETTERS="a b c d e f g h i j k l m n o p q r s t u v w x y z"
 URL="https://dl.bintray.com/opensim/opensim-core/${PACKAGENAME}/${BRANCHBASE}"  
-echo "---- Looking for opensim/opensim-core/${PACKAGENAME}/${BRANCHBASE}"
+echo "---- Looking for \'opensim/opensim-core/${PACKAGENAME}/${BRANCHBASE}\'."
 for i in $LETTERS; do 
   piece=${TARBALL}a$i 
   curl -L $URL/$piece -o $piece
@@ -25,7 +25,7 @@ for i in $LETTERS; do
     rm $piece 
     break 
   else 
-    echo "---- Downloaded piece $piece" 
+    echo "---- Downloaded piece \'$piece\'." 
   fi 
 done
 if [ ! -f ${TARBALL}aa ]; then 
