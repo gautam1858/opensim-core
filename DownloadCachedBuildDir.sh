@@ -33,7 +33,7 @@ if [ ! -f ${TARBALL}aa ]; then
   mkdir opensim-core-build
   return
 fi
-echo "Joining the pieces of cache downloaded."; fi
+echo "Joining the pieces of cache downloaded."
 cat opensim-core-build.tar.gz* > opensim-core-build.tar.gz
 echo "Decompressing tarball."
 tar -xzf opensim-core-build.tar.gz
