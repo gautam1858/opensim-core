@@ -147,11 +147,21 @@ install:
   - if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
   - PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
   - echo $PACKAGENAME
+  - cd $TRAVIS_BUILD_DIR
+  - git fetch origin master:master
+  - BRANCHTIP=$(git log -n1 --format='%H')
+  - BRANCHBASE=$(git merge-base master ${BRANCHTIP})
+  - cd ..
+  - find opensim-core -iname '*' | while read f; do touch -m -d"2015-05-18 09:00:00" $f; done
+  - cd opensim-core
+  - git diff --name-only $BRANCHBASE $BRANCHTIP | while read f; do touch $f; done
+
+
   - cd ~
-  - curl -L "https://jfrog.bintray.com/jfrog-cli-go/1.2.0/jfrog-cli-linux-amd64/jfrog" -o jfrog
-  - chmod u+x jfrog
-  - ./jfrog bt config --user klshrinidhi --key 440061321dba00a68210b482261154ea58d03f00 --licenses Apache-2.0
-  - ./jfrog bt download-ver opensim/opensim-core/${PACKAGENAME}/64dca7cd40275491f09f206d849d80cd6ef381a3 --flat=true
+  - TARBALL=opensim-core-build.tar.gz
+  - LETTERS="a b c d e f g h i j k l m n o p q r s t u v w x y z"
+  - URL="https://dl.bintray.com/opensim/opensim-core/${PACKAGENAME}/${BRANCHBASE}"  
+  - for i in $LETTERS; do piece=${TARBALL}a$i; curl -L $URL/$piece -o $piece; if [ $(wc -c < $piece) -lt 100 ]; then rm $piece; break; fi; done
   - cat opensim-core-build.tar.gz* > opensim-core-build.tar.gz
   - tar -xzf opensim-core-build.tar.gz
   - if [ ! -d opensim-core-build ]; then mkdir opensim-core-build; fi
