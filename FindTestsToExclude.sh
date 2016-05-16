@@ -10,10 +10,8 @@ for test in $ALLTESTS; do
     TESTS_TO_EXCLUDE="$TESTS_TO_EXCLUDE|$test"
     echo "---- Excluding test $test."
     COUNTER=$(($COUNTER + 1))
-  else
-    echo "---- Cannot exclude $test."
   fi
 done
 if [[ $COUNTER == 0 ]]; then
-  echo "---- No tests found."
+  echo "---- No tests found to exclude."
 fi
