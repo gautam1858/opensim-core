@@ -4,6 +4,7 @@ cd $TRAVIS_BUILD_DIR
 CURRBRANCH=$(git branch | grep '*' | sed 's/^* //')
 if [ "$CURRBRANCH" != "master" ]; then 
   echo '---- Not caching build directory. Current branch is not master.'
+  cd ${OPENSIM_BUILD_DIR}
   return
 fi
 
@@ -25,4 +26,4 @@ echo '---- Publishing uploaded build directory.'
 curl -X POST -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 $URL
 echo '---- Cleaning up.'
 rm ${TARBALL}*
-cd opensim-core-build
+cd ${OPENSIM_BUILD_DIR}
