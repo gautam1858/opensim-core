@@ -38,7 +38,7 @@ if [ ! -f ${TARBALL}aa ]; then
   mkdir opensim-core-build
   return
 fi
-echo 'Joining the pieces downloaded.
+echo 'Joining the pieces downloaded.'
 cat ${TARBALL}* > ${TARBALL}
 echo 'Decompressing tarball.'
 tar -xzf ${TARBALL}
