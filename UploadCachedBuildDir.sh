@@ -46,6 +46,7 @@ done
 URL="https://api.bintray.com/content/opensim/${PROJECT}/${PACKAGENAME}/${MASTERTIP}/publish"
 echo '---- Publishing uploaded build directory.'
 curl -X POST -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 $URL
+echo
 echo '---- Cleaning up.'
 rm ${TARBALL}*
 cd $CURR_DIR
