@@ -40,7 +40,8 @@ URL="https://api.bintray.com/content/opensim/${PROJECT}/${PACKAGENAME}/${MASTERT
 PIECES=$(ls ${TARBALL}a*)
 for piece in $PIECES; do 
   echo "---- Uploading piece ${piece} to opensim/${PROJECT}/${PACKAGENAME}/${MASTERTIP}"
-  curl -T $piece -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 ${URL}/${piece} 
+  curl -T $piece -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 ${URL}/${piece}
+  echo 
 done
 URL="https://api.bintray.com/content/opensim/${PROJECT}/${PACKAGENAME}/${MASTERTIP}/publish"
 echo '---- Publishing uploaded build directory.'
