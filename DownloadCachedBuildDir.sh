@@ -1,5 +1,6 @@
 set -e
 
+cd $TRAVIS_BUILD_DIR
 if [ $(git branch | grep '*' | sed 's/^* //') == "master" ]; then 
   echo "---- Not downloading cache. Current branch is master."
   return
@@ -9,7 +10,6 @@ echo "---- Checking for availability of cached build directory on Bintray."
 if  [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
 if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
 PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
-cd $TRAVIS_BUILD_DIR
 echo "---- Fetching master branch."
 git fetch origin master:master
 BRANCHTIP=$(git log -n1 --format='%H')
@@ -42,4 +42,3 @@ echo "Joining the pieces of cache downloaded."
 cat opensim-core-build.tar.gz* > opensim-core-build.tar.gz
 echo "Decompressing tarball."
 tar -xzf opensim-core-build.tar.gz
-mkdir opensim-core-build
