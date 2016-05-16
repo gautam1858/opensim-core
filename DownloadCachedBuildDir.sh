@@ -1,7 +1,7 @@
 set -e
 
 cd $TRAVIS_BUILD_DIR
-if [ "$(git branch | grep '*' | sed 's/^* //')" == "master" ]; then 
+if [ $(git branch | grep '*' | sed 's/^* //') == "master" ]; then 
   echo "---- Not downloading cache. Current branch is master."
   return
 fi
