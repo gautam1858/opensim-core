@@ -57,6 +57,7 @@ addons:
       - sshpass
 
 before_install:
+  - source ${TRAVIS_BUILD_DIR}/DownloadCachedBuildDir.sh
 
   ## Ensure that there are no tabs in source code.
   - cd $TRAVIS_BUILD_DIR
@@ -131,7 +132,7 @@ install:
   #######################################################################################################################
   # Download the cached build directory, if one exists.
   #######################################################################################################################
-  - source ${TRAVIS_BUILD_DIR}/DownloadCachedBuildDir.sh
+  #- source ${TRAVIS_BUILD_DIR}/DownloadCachedBuildDir.sh
 
   #######################################################################################################################
   # Configure OpenSim.
