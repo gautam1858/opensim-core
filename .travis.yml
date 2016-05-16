@@ -57,7 +57,20 @@ addons:
       - sshpass
 
 before_install:
-  - source ${TRAVIS_BUILD_DIR}/DownloadCachedBuildDir.sh
+  - cd $TRAVIS_BUILD_DIR
+  - echo '---- Checking for availability of cached build directory on Bintray.'
+  - if  [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
+  - if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
+  - PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
+  - git fetch -q origin master:master
+  - echo "after fetch"
+  - BRANCHTIP=$(git log -n1 --format='%H')
+  - echo $BRANCHTIP
+  - BRANCHBASE=$(git merge-base master ${BRANCHTIP})
+  - echo $BRANCHBASE
+
+
+
   ## Ensure that there are no tabs in source code.
   - cd $TRAVIS_BUILD_DIR
   # GREP returns 0 (true) if there are any matches, and
