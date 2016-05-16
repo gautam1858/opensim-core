@@ -6,11 +6,11 @@ if [ "$(git branch | grep '*' | sed 's/^* //')"" == "master" ]; then
   return
 fi
 
-echo "---- Checking for availability of cached build directory on Bintray."
+echo '---- Checking for availability of cached build directory on Bintray.'
 if  [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
 if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
 PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
-echo "---- Fetching master branch."
+echo '---- Fetching master branch.'
 git fetch -q origin master:master
 BRANCHTIP=$(git log -n1 --format='%H')
 BRANCHBASE=$(git merge-base master ${BRANCHTIP})
@@ -20,7 +20,7 @@ cd opensim-core
 git diff --name-only $BRANCHBASE $BRANCHTIP | while read f; do touch $f; done
 cd ~
 TARBALL=opensim-core-build.tar.gz
-LETTERS="a b c d e f g h i j k l m n o p q r s t u v w x y z"
+LETTERS='a b c d e f g h i j k l m n o p q r s t u v w x y z'
 URL="https://dl.bintray.com/opensim/opensim-core/${PACKAGENAME}/${BRANCHBASE}"  
 echo "---- Looking for opensim/opensim-core/${PACKAGENAME}/${BRANCHBASE}"
 for i in $LETTERS; do 
@@ -34,12 +34,12 @@ for i in $LETTERS; do
   fi 
 done
 if [ ! -f ${TARBALL}aa ]; then 
-  echo "---- Cache not found."
+  echo '---- Cache not found.'
   mkdir opensim-core-build
   return
 fi
-echo "Joining the pieces downloaded."
+echo 'Joining the pieces downloaded.
 cat ${TARBALL}* > ${TARBALL}
-echo "Decompressing tarball."
+echo 'Decompressing tarball.'
 tar -xzf ${TARBALL}
 rm -f ${TARBALL}*
