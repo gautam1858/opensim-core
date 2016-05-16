@@ -19,7 +19,7 @@ for piece in PIECES; do
   echo "---- Uploading piece \'${piece}\' to \'opensim/opensim-core/${PACKAGENAME}/${MASTERTIP}\'"
   curl -T $piece -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 ${URL}/${piece} 
 done
-URL="https://api.bintray.com/content/opensim/opensim-core/${PACKAGENAME}/${VERSION}/publish"
+URL="https://api.bintray.com/content/opensim/opensim-core/${PACKAGENAME}/${MASTERTIP}/publish"
 echo "---- Publishing uploaded build directory."
 curl -X POST -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 $URL
 rm ${TARBALL}*
