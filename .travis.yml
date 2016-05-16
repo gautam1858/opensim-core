@@ -66,8 +66,9 @@ before_install:
   - echo "after fetch"
   - BRANCHTIP=$(git log -n1 --format='%H')
   - echo $BRANCHTIP
-  - BRANCHBASE=$(git merge-base master ${BRANCHTIP})
-  - echo $BRANCHBASE
+  - git merge-base master ${BRANCHTIP}
+  #- BRANCHBASE=$(git merge-base master ${BRANCHTIP})
+  #- echo $BRANCHBASE
 
 
 
