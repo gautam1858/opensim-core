@@ -43,4 +43,5 @@ echo '---- Joining the pieces downloaded.'
 cat ${TARBALL}* > ${TARBALL}
 echo '---- Decompressing tarball.'
 tar -xzf ${TARBALL}
+echo '---- Cleaning up.'
 rm -f ${TARBALL}*
