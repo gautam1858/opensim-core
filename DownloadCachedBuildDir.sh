@@ -11,8 +11,8 @@ echo '---- Checking for availability of cached build directory on Bintray.'
 if  [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
 if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
 PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
-git fetch -q --unshallow
-git fetch -q origin master:master
+git fetch --quiet --unshallow
+git fetch --quiet origin master:master
 BRANCHTIP=$(git log -n1 --format='%H')
 BRANCHBASE=$(git merge-base master ${BRANCHTIP})
 cd ..
@@ -26,7 +26,7 @@ URL="https://dl.bintray.com/opensim/opensim-core/${PACKAGENAME}/${BRANCHBASE}"
 echo "---- Looking for opensim/opensim-core/${PACKAGENAME}/${BRANCHBASE}"
 for i in $LETTERS; do 
   piece=${TARBALL}a$i 
-  curl -L $URL/$piece -o $piece
+  curl -s -L $URL/$piece -o $piece
   if [ $(wc -c < $piece) -lt 100 ]; then 
     rm $piece 
     break 
