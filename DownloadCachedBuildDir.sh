@@ -30,7 +30,7 @@ for i in $LETTERS; do
     rm $piece 
     break 
   else 
-    echo "---- Downloaded piece '$piece\'" 
+    echo "---- Downloaded piece '$piece'" 
   fi 
 done
 if [ ! -f ${TARBALL}aa ]; then 
@@ -39,7 +39,7 @@ if [ ! -f ${TARBALL}aa ]; then
   return
 fi
 echo "Joining the pieces of cache downloaded."
-cat opensim-core-build.tar.gz* > opensim-core-build.tar.gz
+cat ${TARBALL}* > ${TARBALL}
 echo "Decompressing tarball."
-tar -xzf opensim-core-build.tar.gz
+tar -xzf ${TARBALL}
 rm -f ${TARBALL}*
