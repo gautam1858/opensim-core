@@ -30,7 +30,7 @@ for i in $LETTERS; do
     rm $piece 
     break 
   else 
-    echo "---- Downloaded piece $piece"
+    echo ---- Downloaded piece $piece
   fi 
 done
 if [ ! -f ${TARBALL}aa ]; then 
