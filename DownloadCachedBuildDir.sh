@@ -17,9 +17,10 @@ BRANCHBASE=$(git merge-base master ${BRANCHTIP})
 cd ..
 find opensim-core -iname '*' | while read f; do touch -m -t"201505180900" $f; done
 cd opensim-core
+echo "after find"
 git diff --name-only $BRANCHBASE $BRANCHTIP | while read f; do touch $f; done
 cd ~
-TARBALL=opensim-core-build.tar.gz
+TARBALL='opensim-core-build.tar.gz'
 echo "after tarball"
 LETTERS='a b c d e f g h i j k l m n o p q r s t u v w x y z'
 URL="https://dl.bintray.com/opensim/opensim-core/${PACKAGENAME}/${BRANCHBASE}"
