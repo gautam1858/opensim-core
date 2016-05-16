@@ -16,8 +16,10 @@ git fetch --quiet origin master:master
 BRANCHTIP=$(git log -n1 --format='%H')
 BRANCHBASE=$(git merge-base master ${BRANCHTIP})
 cd ..
-find opensim-core -iname '*' | while read f; do touch -m -t"201505180900" $f; done
+# Set timestamp of all files back. Timestamp here is the timestamp of 1st commit on master.
+find opensim-core -iname '*' | while read f; do touch -m -t"200505091952" $f; done
 cd opensim-core
+# Touch the files that this branch has modified after its birth.
 git diff --name-only $BRANCHBASE $BRANCHTIP | while read f; do touch $f; done
 cd ~
 TARBALL=opensim-core-build.tar.gz
