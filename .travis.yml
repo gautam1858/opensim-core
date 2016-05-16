@@ -132,6 +132,8 @@ install:
   #######################################################################################################################
   - source ${TRAVIS_BUILD_DIR}/DownloadCachedBuildDir.sh
 
+  - BUILD_START_TIMESTAMP=$(date +%s)
+
   #######################################################################################################################
   # Configure OpenSim.
   #######################################################################################################################
@@ -153,6 +155,11 @@ install:
   - cd ~/opensim-core-build
 
 script:
+  #######################################################################################################################
+  # Find tests to exclude. Add them to TESTS_TO_EXCLUDE.
+  #######################################################################################################################
+  - source ${TRAVIS_BUILD_DIR}/FindTestsToExclude.sh
+
   # Test OpenSim.
   # TODO On Debug, we need to tell travis not to timeout if it doesn't get
   # any output for more than 10 minutes. We do this using "travis_wait".
