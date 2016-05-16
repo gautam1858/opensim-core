@@ -20,6 +20,7 @@ cd ..
 find opensim-core -iname '*' | while read f; do touch -m -t"199001010101" $f; done
 cd opensim-core
 # Touch the files that this branch has modified after its birth.
+git diff --name-only $BRANCHBASE $BRANCHTIP
 git diff --name-only $BRANCHBASE $BRANCHTIP | while read f; do touch $f; done
 cd ~
 TARBALL=opensim-core-build.tar.gz
