@@ -15,6 +15,9 @@ fi
 
 cd $SOURCE_DIR
 # Make sure the branch is master.
+pwd
+git branch
+git remote -v
 CURRBRANCH=$(git branch | grep '*' | sed 's/^* //')
 if [ "$CURRBRANCH" != "master" ]; then 
   echo '---- Not caching build directory. Current branch is not master.'
