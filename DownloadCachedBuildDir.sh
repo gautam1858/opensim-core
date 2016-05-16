@@ -1,7 +1,7 @@
 set -e
 
 cd $TRAVIS_BUILD_DIR
-if [ $(git branch | grep '*' | sed 's/^* //') == "master" ]; then 
+if [ "$(git branch | grep '*' | sed 's/^* //')"" == "master" ]; then 
   echo "---- Not downloading cache. Current branch is master."
   return
 fi
@@ -42,3 +42,4 @@ echo "Joining the pieces of cache downloaded."
 cat opensim-core-build.tar.gz* > opensim-core-build.tar.gz
 echo "Decompressing tarball."
 tar -xzf opensim-core-build.tar.gz
+rm -f ${TARBALL}*
