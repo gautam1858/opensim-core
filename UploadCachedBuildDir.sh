@@ -14,15 +14,14 @@ if [ "${BUILD_DIR:0:1}" != "/" ]; then
 fi
 
 cd $SOURCE_DIR
-# Make sure the branch is master.
-pwd
-git branch
-git remote -v
-CURRBRANCH=$(git branch | grep '*' | sed 's/^* //')
-if [ "$CURRBRANCH" != "master" ]; then 
-  echo '---- Not caching build directory. Current branch is not master.'
-  cd $CURR_DIR
-  return
+if [ "$PROJECT" == "opensim-core" ]; then
+  # Make sure the branch is master.
+  CURRBRANCH=$(git reflog | tail -n2 | head -n1 | sed 's/.*checkout: moving from \([^ ]*\) to.*/\1/')
+  if [ "$CURRBRANCH" != "master" ]; then 
+    echo "---- Not caching build directory. Current branch (${CURRBRANCH}) is not master."
+    cd $CURR_DIR
+    return
+  fi
 fi
 
 MASTERTIP=$(git log -n1 --format="%H")
