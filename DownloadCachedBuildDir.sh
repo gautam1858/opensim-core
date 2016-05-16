@@ -14,12 +14,10 @@ if [ "${BUILD_DIR:0:1}" != "/" ]; then
 fi
 
 cd $SOURCE_DIR
-if [ "$PROJECT" == "opensim-core" ]; then
-  CURRBRANCH=$(git reflog | tail -n2 | head -n1 | sed 's/.*checkout: moving from \([^ ]*\) to.*/\1/')
-  if [ "$CURRBRANCH" == "master" ]; then 
-    echo "---- Not downloading cache. Current branch is master."
-    return
-  fi
+CURRBRANCH=$(git reflog | tail -n2 | head -n1 | sed 's/.*checkout: moving from \([^ ]*\) to.*/\1/')
+if [ "$CURRBRANCH" == "master" ]; then 
+  echo "---- Not downloading cache. Current branch is master."
+  return
 fi
 
 echo '---- Checking for availability of cached build directory on Bintray.'
@@ -27,32 +25,20 @@ if [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
 if [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
 PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
 
-############## If project is opensim-core, download cache of base of the branch in master. If project
-############## is not opensim-core, download cache for the currently checked out version.
 BRANCHTIP=$(git log -n1 --format='%H')
-if [ "$PROJECT" == "opensim-core" ]; then
-  git fetch --quiet --unshallow
-  git fetch --quiet origin master:master
-  BRANCHBASE=$(git merge-base master ${BRANCHTIP})
-fi
+git fetch --quiet --unshallow
+git fetch --quiet origin master:master
+BRANCHBASE=$(git merge-base master ${BRANCHTIP})
 # Set timestamp of all files back. Timestamp here is the timestamp of 1st commit on master.
 find . -name '*' | while read f; do touch -m -t"199001010101" $f; done
-if [ "$PROJECT" == "opensim-core" ]; then
-  # Touch the files that this branch has modified after its birth.
-  git diff --name-only $BRANCHBASE $BRANCHTIP | while read f; do touch $f; done
-fi
-if [ "$PROJECT" == "opensim-core" ]; then
-  CACHEVERSION=${BRANCHBASE}
-else
-  CACHEVERSION=${BRANCHTIP}
-fi
-###############
+# Touch the files that this branch has modified after its birth.
+git diff --name-only $BRANCHBASE $BRANCHTIP | while read f; do touch $f; done
 
 BUILD_DIRNAME=$(basename $BUILD_DIR)
 TARBALL=${BUILD_DIRNAME}.tar.gz
 LETTERS='a b c d e f g h i j k l m n o p q r s t u v w x y z'
-URL="https://dl.bintray.com/opensim/${PROJECT}/${PACKAGENAME}/${CACHEVERSION}"
-echo "---- Looking for opensim/${PROJECT}/${PACKAGENAME}/${CACHEVERSION}"
+URL="https://dl.bintray.com/opensim/${PROJECT}/${PACKAGENAME}/${BRANCHBASE}"
+echo "---- Looking for opensim/${PROJECT}/${PACKAGENAME}/${BRANCHBASE}"
 if [ ! -d $BUILD_DIR ]; then mkdir $BUILD_DIR; fi
 cd ${BUILD_DIR}/..
 for i in $LETTERS; do 
