@@ -1,6 +1,19 @@
 set -e
+# Arguments
+PROJECT=$1
+SOURCE_DIR=$2
+BUILD_DIR=$3
 
-cd $TRAVIS_BUILD_DIR
+CURR_DIR=$(pwd)
+# Turn relative paths into absolute paths.
+if [ "${SOURCE_DIR:0:1}" != "/" ]; then
+  SOURCE_DIR=${CURR_DIR}/${SOURCE_DIR}
+fi
+if [ "${BUILD_DIR:0:1}" != "/" ]; then
+  BUILD_DIR=${CURR_DIR}/${BUILD_DIR}
+fi
+
+cd $SOURCE_DIR
 CURRBRANCH=$(git branch | grep '*' | sed 's/^* //')
 if [ "$CURRBRANCH" == "master" ]; then 
   echo "---- Not downloading cache. Current branch is master."
@@ -15,17 +28,17 @@ git fetch --quiet --unshallow
 git fetch --quiet origin master:master
 BRANCHTIP=$(git log -n1 --format='%H')
 BRANCHBASE=$(git merge-base master ${BRANCHTIP})
-cd ..
 # Set timestamp of all files back. Timestamp here is the timestamp of 1st commit on master.
-find opensim-core -iname '*' | while read f; do touch -m -t"199001010101" $f; done
-cd opensim-core
+find . -name '*' | while read f; do touch -m -t"199001010101" $f; done
 # Touch the files that this branch has modified after its birth.
 git diff --name-only $BRANCHBASE $BRANCHTIP | while read f; do touch $f; done
-cd ~
-TARBALL=opensim-core-build.tar.gz
+BUILD_DIRNAME=$(basename $BUILD_DIR)
+TARBALL=${BUILD_DIRNAME}.tar.gz
 LETTERS='a b c d e f g h i j k l m n o p q r s t u v w x y z'
-URL="https://dl.bintray.com/opensim/opensim-core/${PACKAGENAME}/${BRANCHBASE}"
-echo "---- Looking for opensim/opensim-core/${PACKAGENAME}/${BRANCHBASE}"
+URL="https://dl.bintray.com/opensim/${PROJECT}/${PACKAGENAME}/${BRANCHBASE}"
+echo "---- Looking for opensim/${PROJECT}/${PACKAGENAME}/${BRANCHBASE}"
+if [ ! -d $BUILD_DIR ]; then mkdir $BUILD_DIR; fi
+cd ${BUILD_DIR}/..
 for i in $LETTERS; do 
   piece=${TARBALL}a$i 
   curl -s -L $URL/$piece -o $piece
@@ -38,7 +51,6 @@ for i in $LETTERS; do
 done
 if [ ! -f ${TARBALL}aa ]; then 
   echo '---- Cache not found.'
-  mkdir opensim-core-build
   return
 fi
 echo '---- Joining the pieces downloaded.'
@@ -47,3 +59,4 @@ echo '---- Decompressing tarball.'
 tar -xzf ${TARBALL}
 echo '---- Cleaning up.'
 rm -f ${TARBALL}*
+cd $CURR_DIR
