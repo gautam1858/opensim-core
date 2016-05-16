@@ -1,7 +1,8 @@
 set -e
 
 cd $TRAVIS_BUILD_DIR
-if [ $(git branch | grep '*' | sed 's/^* //') == "master" ]; then 
+CURRBRANCH=$(git branch | grep '*' | sed 's/^* //')
+if [ "$CURRBRANCH" == "master" ]; then 
   echo "---- Not downloading cache. Current branch is master."
   return
 fi
@@ -19,7 +20,7 @@ find opensim-core -iname '*' | while read f; do touch -m -t"201505180900" $f; do
 cd opensim-core
 git diff --name-only $BRANCHBASE $BRANCHTIP | while read f; do touch $f; done
 cd ~
-TARBALL='opensim-core-build.tar.gz'
+TARBALL=opensim-core-build.tar.gz
 LETTERS='a b c d e f g h i j k l m n o p q r s t u v w x y z'
 URL="https://dl.bintray.com/opensim/opensim-core/${PACKAGENAME}/${BRANCHBASE}"
 echo "---- Looking for opensim/opensim-core/${PACKAGENAME}/${BRANCHBASE}"
