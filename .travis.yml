@@ -127,7 +127,9 @@ before_install:
   #######################################################################################################################
   # Download the cached build directory, if one exists.
   #######################################################################################################################
-  - source ${TRAVIS_BUILD_DIR}/DownloadCachedBuildDirDeps.sh BTKCore $TRAVIS_BUILD_DIR/dependencies/BTK $OPENSIM_DEPENDENCIES_BUILD_DIR/BTK
+  - BTK_SOURCE_DIR="${TRAVIS_BUILD_DIR}/dependencies/BTK"
+  - BTK_BUILD_DIR="${OPENSIM_DEPENDENCIES_BUILD_DIR}/BTK/build"
+  - source ${TRAVIS_BUILD_DIR}/DownloadCachedBuildDirDeps.sh BTKCore $BTK_SOURCE_DIR $BTK_BUILD_DIR
 
   - BUILD_START_TIMESTAMP=$(date +%s)
   - make -j8
@@ -135,7 +137,7 @@ before_install:
   #######################################################################################################################
   # Cache BTK build directory.
   #######################################################################################################################
-  - source ${TRAVIS_BUILD_DIR}/UploadCachedBuildDir.sh BTKCore $TRAVIS_BUILD_DIR/dependencies/BTK $OPENSIM_DEPENDENCIES_BUILD_DIR/BTK
+  - source ${TRAVIS_BUILD_DIR}/UploadCachedBuildDir.sh BTKCore $BTK_SOURCE_DIR $BTK_BUILD_DIR
 
 install:
   #######################################################################################################################
