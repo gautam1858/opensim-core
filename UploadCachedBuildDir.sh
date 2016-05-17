@@ -13,13 +13,6 @@ if [ "${BUILD_DIR:0:1}" != "/" ]; then
   BUILD_DIR=${CURR_DIR}/${BUILD_DIR}
 fi
 
-MINS_SINCE_BUILD_START=$(( (($(date +%s) - $BUILD_START_TIMESTAMP) / 60) + 1 ))
-findres=$(find $BUILD_DIR -name '*' -mmin -$MINS_SINCE_BUILD_START)
-if [ "$findres" == "" ]; then
-  echo "---- Looks like this build is already cached."
-  return
-fi
-
 cd $SOURCE_DIR
 if [ "$PROJECT" == "opensim-core" ]; then
   # Make sure the branch is master.
@@ -32,27 +25,32 @@ if [ "$PROJECT" == "opensim-core" ]; then
 fi
 
 MASTERTIP=$(git log -n1 --format="%H")
-cd ${BUILD_DIR}/..
-echo '---- Compressing build directory into a tarball.'
-BUILD_DIRNAME=$(basename $BUILD_DIR)
-TARBALL=${BUILD_DIRNAME}.tar.gz
-tar -czf $TARBALL $BUILD_DIRNAME
-echo '---- Splitting tarball into smaller pieces for upload.'
-split -b 200m $TARBALL $TARBALL
-rm $TARBALL
 if  [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
 if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
 PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
 URL="https://api.bintray.com/content/opensim/${PROJECT}/${PACKAGENAME}/${MASTERTIP}/${PACKAGENAME}/${MASTERTIP}"
+BUILD_DIRNAME=$(basename $BUILD_DIR)
+TARBALL=${BUILD_DIRNAME}.tar.gz
+if curl --head --fail --silent --location ${URL}/${TARBALL}aa -o /dev/null; then
+  echo "---- Already cached: $PROJECT."
+  return
+fi
+
+cd ${BUILD_DIR}/..
+echo '---- Compressing build directory into a tarball.'
+tar -czf $TARBALL $BUILD_DIRNAME
+echo '---- Splitting tarball into smaller pieces for upload.'
+split -b 200m $TARBALL $TARBALL
+rm $TARBALL
 PIECES=$(ls ${TARBALL}a*)
 for piece in $PIECES; do 
   echo "---- Uploading piece ${piece} to opensim/${PROJECT}/${PACKAGENAME}/${MASTERTIP}"
-  curl -T $piece -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 ${URL}/${piece}
+  curl --upload-file $piece -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 ${URL}/${piece}
   echo 
 done
 URL="https://api.bintray.com/content/opensim/${PROJECT}/${PACKAGENAME}/${MASTERTIP}/publish"
 echo '---- Publishing uploaded build directory.'
-curl -X POST -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 $URL
+curl --request POST -uklshrinidhi:440061321dba00a68210b482261154ea58d03f00 $URL
 echo
 echo '---- Cleaning up.'
 rm ${TARBALL}*
