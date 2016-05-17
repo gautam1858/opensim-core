@@ -13,6 +13,13 @@ if [ "${BUILD_DIR:0:1}" != "/" ]; then
   BUILD_DIR=${CURR_DIR}/${BUILD_DIR}
 fi
 
+MINS_SINCE_BUILD_START=$(( (($(date +%s) - $BUILD_START_TIMESTAMP) / 60) + 1 ))
+findres=$(find $BUILD_DIR -name '*' -mmin -$MINS_SINCE_BUILD_START)
+if [ "$findres" == "" ]; then
+  echo "---- Looks like this build is already cached."
+  return
+fi
+
 cd $SOURCE_DIR
 if [ "$PROJECT" == "opensim-core" ]; then
   # Make sure the branch is master.
