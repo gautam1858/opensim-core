@@ -32,11 +32,11 @@ PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
 # Set timestamp of all files back.
 find . -name '*' | while read f; do touch -m -t"199001010101" $f; done
 
-TARBALL=build.tar.gz
+TARBALL=$(basename $BUILD_DIR).tar.gz
 LETTERS='a b c d e f g h i j k l m n o p q r s t u v w x y z'
 URL="https://dl.bintray.com/opensim/${PROJECT}/${PACKAGENAME}/${BRANCHTIP}"
 echo "---- Looking for opensim/${PROJECT}/${PACKAGENAME}/${BRANCHTIP}"
-cd ${BUILD_DIR}
+cd ${BUILD_DIR}/..
 for i in $LETTERS; do 
   piece=${TARBALL}a$i 
   curl -s -L $URL/$piece -o $piece
