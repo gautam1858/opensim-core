@@ -196,3 +196,4 @@ private:
 } // end of namespace OpenSim
 
 #endif // OPENSIM_PATH_SPRING_H_
+
