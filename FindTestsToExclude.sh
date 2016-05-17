@@ -2,7 +2,7 @@ set -e
 
 echo '---- Finding tests to exclude.'
 MINS_SINCE_BUILD_START=$(( (($(date +%s) - $BUILD_START_TIMESTAMP) / 60) + 1 ))
-ALLTESTS=$(ctest --show-only | grep 'Test #' | sed 's/^.*: //')
+ALLTESTS=$(ctest --show-only | grep '#' | sed 's/^.*: //')
 COUNTER=0
 for test in $ALLTESTS; do
   findres=$(find . -name "*$test" -mmin +$MINS_SINCE_BUILD_START)
