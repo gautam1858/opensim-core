@@ -229,5 +229,3 @@ public:
 }; // end namespace
 
 #endif // CMC_h__
-
-
