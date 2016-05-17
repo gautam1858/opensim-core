@@ -39,7 +39,7 @@ echo "---- Looking for opensim/${PROJECT}/${PACKAGENAME}/${BRANCHTIP}"
 cd ${BUILD_DIR}/..
 for i in $LETTERS; do 
   piece=${TARBALL}a$i 
-  curl -s -L $URL/$piece -o $piece
+  curl --silent --location $URL/$piece -o $piece
   if [ $(wc -c < $piece) -lt 100 ]; then 
     rm $piece 
     break 
