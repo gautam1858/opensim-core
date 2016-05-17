@@ -13,12 +13,17 @@ if [ "${BUILD_DIR:0:1}" != "/" ]; then
   BUILD_DIR=${CURR_DIR}/${BUILD_DIR}
 fi
 
+cd $BUILD_DIR
+BRANCHTIP=$(grep -r 'COMMAND .*git.*checkout ' tmp/*gitclone.cmake | sed 's/.* checkout \([0-9a-z]\{40\}\)/\1/')
+SOURCEURL=$(grep -r 'COMMAND .*git.*clone ' tmp/*gitclone.cmake | sed 's/.* clone "\(.*\?\)" .*/\1/')
+git clone "$SOURCEURL" $(basename $SOURCE_DIR)
 cd $SOURCE_DIR
+git checkout $BRANCHTIP
+
 echo '---- Checking for availability of cached build directory on Bintray.'
 if [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
 if [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
 PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
-BRANCHTIP=$(git log -n1 --format='%H')
 # Set timestamp of all files back.
 find . -name '*' | while read f; do touch -m -t"199001010101" $f; done
 
