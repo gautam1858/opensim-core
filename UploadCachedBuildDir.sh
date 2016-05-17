@@ -17,6 +17,7 @@ fi
 cd $SOURCE_DIR
 if [ "$PROJECT" == "opensim-core" ]; then
   git checkout master
+  git checkout 64dca7cd40275491f09f206d849d80cd6ef381a3
   cd $BUILD_DIR
   make -j$NPROC
   cd $SOURCE_DIR
