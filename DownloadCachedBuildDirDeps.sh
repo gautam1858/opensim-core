@@ -14,9 +14,11 @@ if [ "${BUILD_DIR:0:1}" != "/" ]; then
 fi
 
 cd $BUILD_DIR
+# Extract the commit-id of the dependency.
 BRANCHTIP=$(grep -r 'COMMAND .*git.*checkout ' tmp/*gitclone.cmake | sed 's/.* checkout \([0-9a-z]\{40\}\)/\1/')
 echo $BRANCHTIP
-SOURCEURL=$(grep -r 'COMMAND .*git.*clone ' tmp/*gitclone.cmake | sed 's/.* clone "\(.*\?\)" .*/\1/')
+# Extract the url of the dependency.
+SOURCEURL=$(grep -r 'COMMAND .*git.*clone ' tmp/*gitclone.cmake | sed 's/.* clone \"\(https:.*\)\" .*/\1/')
 echo $SOURCEURL
 cd $(dirname $SOURCE_DIR)
 git clone --quiet "$SOURCEURL" $(basename $SOURCE_DIR)
