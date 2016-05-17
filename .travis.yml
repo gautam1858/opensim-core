@@ -128,7 +128,7 @@ before_install:
   # Download the cached build directory, if one exists.
   #######################################################################################################################
   - BTK_SOURCE_DIR="${TRAVIS_BUILD_DIR}/dependencies/BTK"
-  - BTK_BUILD_DIR="${OPENSIM_DEPENDENCIES_BUILD_DIR}/BTK/build"
+  - BTK_BUILD_DIR="${OPENSIM_DEPENDENCIES_BUILD_DIR}/BTK"
   - source ${TRAVIS_BUILD_DIR}/DownloadCachedBuildDirDeps.sh BTKCore $BTK_SOURCE_DIR $BTK_BUILD_DIR
 
   - BUILD_START_TIMESTAMP=$(date +%s)
