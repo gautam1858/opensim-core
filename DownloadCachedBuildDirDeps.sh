@@ -32,13 +32,11 @@ PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
 # Set timestamp of all files back.
 find . -name '*' | while read f; do touch -m -t"199001010101" $f; done
 
-BUILD_DIRNAME=$(basename $BUILD_DIR)
-TARBALL=${BUILD_DIRNAME}.tar.gz
+TARBALL=build.tar.gz
 LETTERS='a b c d e f g h i j k l m n o p q r s t u v w x y z'
 URL="https://dl.bintray.com/opensim/${PROJECT}/${PACKAGENAME}/${BRANCHTIP}"
 echo "---- Looking for opensim/${PROJECT}/${PACKAGENAME}/${BRANCHTIP}"
-if [ ! -d $BUILD_DIR ]; then mkdir $BUILD_DIR; fi
-cd ${BUILD_DIR}/..
+cd ${BUILD_DIR}
 for i in $LETTERS; do 
   piece=${TARBALL}a$i 
   curl -s -L $URL/$piece -o $piece
@@ -51,6 +49,7 @@ for i in $LETTERS; do
 done
 if [ ! -f ${TARBALL}aa ]; then 
   echo '---- Cache not found.'
+  cd $CURR_DIR
   return
 fi
 echo '---- Joining the pieces downloaded.'
