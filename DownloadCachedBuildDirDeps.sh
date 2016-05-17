@@ -15,9 +15,12 @@ fi
 
 cd $BUILD_DIR
 BRANCHTIP=$(grep -r 'COMMAND .*git.*checkout ' tmp/*gitclone.cmake | sed 's/.* checkout \([0-9a-z]\{40\}\)/\1/')
+echo $BRANCHTIP
 SOURCEURL=$(grep -r 'COMMAND .*git.*clone ' tmp/*gitclone.cmake | sed 's/.* clone "\(.*\?\)" .*/\1/')
-git clone "$SOURCEURL" $(basename $SOURCE_DIR)
+echo $SOURCEURL
+git clone --quiet "$SOURCEURL" $(basename $SOURCE_DIR)
 cd $SOURCE_DIR
+pwd
 git checkout $BRANCHTIP
 
 echo '---- Checking for availability of cached build directory on Bintray.'
