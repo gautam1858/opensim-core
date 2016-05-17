@@ -774,3 +774,4 @@ typedef DataTable_<double, SimTK::Vec3> DataTableVec3;
 } // namespace OpenSim
 
 #endif //OPENSIM_DATA_TABLE_H_
+
