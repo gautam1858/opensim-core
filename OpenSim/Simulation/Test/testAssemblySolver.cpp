@@ -331,3 +331,4 @@ double calcLigamentLengthError(const SimTK::State &s, const Model &model)
 
     return error;
 }
+

@@ -412,3 +412,4 @@ void testPrescribedControllerFromFile(const std::string& modelFile,
      
     osimModel.disownAllComponents();
 }
+

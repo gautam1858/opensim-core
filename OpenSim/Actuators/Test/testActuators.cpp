@@ -932,3 +932,4 @@ void testActuatorsCombination()
     std::cout << " ********** Test Actuator Combination time = ********** " <<
         1.e3*(std::clock() - startTime) / CLOCKS_PER_SEC << "ms\n" << endl;
 }
+
