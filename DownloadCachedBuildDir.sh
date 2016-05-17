@@ -29,7 +29,7 @@ BRANCHTIP=$(git log -n1 --format='%H')
 git fetch --quiet --unshallow
 git fetch --quiet origin master:master
 BRANCHBASE=$(git merge-base master ${BRANCHTIP})
-# Set timestamp of all files back. Timestamp here is the timestamp of 1st commit on master.
+# Set timestamp of all files back.
 find . -name '*' | while read f; do touch -m -t"199001010101" $f; done
 # Touch the files that this branch has modified after its birth.
 git diff --name-only $BRANCHBASE $BRANCHTIP | while read f; do touch $f; done
