@@ -28,7 +28,7 @@ MASTERTIP=$(git log -n1 --format="%H")
 if  [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
 if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
 PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
-URL="https://api.bintray.com/content/opensim/${PROJECT}/${PACKAGENAME}/${MASTERTIP}/${PACKAGENAME}/${MASTERTIP}"
+URL="https://dl.bintray.com/opensim/${PROJECT}/${PACKAGENAME}/${BRANCHTIP}"
 BUILD_DIRNAME=$(basename $BUILD_DIR)
 TARBALL=${BUILD_DIRNAME}.tar.gz
 if curl --head --fail --silent --location ${URL}/${TARBALL}aa -o /dev/null; then
@@ -42,6 +42,7 @@ tar -czf $TARBALL $BUILD_DIRNAME
 echo '---- Splitting tarball into smaller pieces for upload.'
 split -b 200m $TARBALL $TARBALL
 rm $TARBALL
+URL="https://api.bintray.com/content/opensim/${PROJECT}/${PACKAGENAME}/${MASTERTIP}/${PACKAGENAME}/${MASTERTIP}"
 PIECES=$(ls ${TARBALL}a*)
 for piece in $PIECES; do 
   echo "---- Uploading piece ${piece} to opensim/${PROJECT}/${PACKAGENAME}/${MASTERTIP}"
