@@ -129,6 +129,7 @@ before_install:
   #######################################################################################################################
   - source ${TRAVIS_BUILD_DIR}/DownloadCachedBuildDirDeps.sh BTKCore $TRAVIS_BUILD_DIR/dependencies/BTK $OPENSIM_DEPENDENCIES_BUILD_DIR
 
+  - BUILD_START_TIMESTAMP=$(date +%s)
   - make -j8
   
   #######################################################################################################################
@@ -142,8 +143,6 @@ install:
   #######################################################################################################################
   - source ${TRAVIS_BUILD_DIR}/DownloadCachedBuildDir.sh opensim-core $TRAVIS_BUILD_DIR ~/opensim-core-build
 
-  - BUILD_START_TIMESTAMP=$(date +%s)
-
   #######################################################################################################################
   # Configure OpenSim.
   #######################################################################################################################
@@ -153,6 +152,7 @@ install:
   #######################################################################################################################
   # Build OpenSim.
   #######################################################################################################################
+  - BUILD_START_TIMESTAMP=$(date +%s)
   # Build java and python C++ wrapper separately to avoid going over the memory limit.
   - if [[ "$WRAP" = "on" ]]; then make -j$NPROC osimTools osimJavaJNI PythonBindings; fi
   # Build whatever remains (at least _opensim, tests and examples).
