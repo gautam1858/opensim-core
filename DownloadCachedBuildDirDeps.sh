@@ -18,6 +18,8 @@ BRANCHTIP=$(grep -r 'COMMAND .*git.*checkout ' tmp/*gitclone.cmake | sed 's/.* c
 echo $BRANCHTIP
 SOURCEURL=$(grep -r 'COMMAND .*git.*clone ' tmp/*gitclone.cmake | sed 's/.* clone "\(.*\?\)" .*/\1/')
 echo $SOURCEURL
+cd $(dirname $SOURCE_DIR)
+pwd
 git clone --quiet "$SOURCEURL" $(basename $SOURCE_DIR)
 cd $SOURCE_DIR
 pwd
