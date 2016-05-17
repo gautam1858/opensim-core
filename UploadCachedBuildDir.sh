@@ -13,31 +13,20 @@ if [ "${BUILD_DIR:0:1}" != "/" ]; then
   BUILD_DIR=${CURR_DIR}/${BUILD_DIR}
 fi
 
-############################################################
 cd $SOURCE_DIR
 if [ "$PROJECT" == "opensim-core" ]; then
-  git checkout master
-  git checkout 64dca7cd40275491f09f206d849d80cd6ef381a3
-  cd $BUILD_DIR
-  make -j$NPROC
-  cd $SOURCE_DIR
+  # Make sure the branch is master.
+  CURRBRANCH=$(git reflog | tail -n2 | head -n1 | sed 's/.*checkout: moving from \([^ ]*\) to.*/\1/')
+  if [ "$CURRBRANCH" != "master" ]; then 
+    echo "---- Not caching build directory. Current branch (${CURRBRANCH}) is not master."
+    cd $CURR_DIR
+    return
+  fi
 fi
-############################################################
-
-#cd $SOURCE_DIR
-#if [ "$PROJECT" == "opensim-core" ]; then
-#  # Make sure the branch is master.
-#  CURRBRANCH=$(git reflog | tail -n2 | head -n1 | sed 's/.*checkout: moving from \([^ ]*\) to.*/\1/')
-#  if [ "$CURRBRANCH" != "master" ]; then 
-#    echo "---- Not caching build directory. Current branch (${CURRBRANCH}) is not master."
-#    cd $CURR_DIR
-#    return
-#  fi
-#fi
 
 MASTERTIP=$(git log -n1 --format="%H")
-if  [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
-if  [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
+if [[ "$CC" == *gcc* ]]; then export COMPILER=gcc; fi
+if [[ "$CC" == *clang* ]]; then export COMPILER=clang; fi
 PACKAGENAME="${MACHTYPE}_${COMPILER}_${BTYPE}"
 URL="https://dl.bintray.com/opensim/${PROJECT}/${PACKAGENAME}/${BRANCHTIP}"
 BUILD_DIRNAME=$(basename $BUILD_DIR)
