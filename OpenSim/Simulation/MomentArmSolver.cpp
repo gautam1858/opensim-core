@@ -157,6 +157,10 @@ SimTK::Vector MomentArmSolver::computeCouplingVector(SimTK::State &state,
     // Now calculate C. by checking how speeds of other coordinates change
     // normalized by how much the speed of the coordinate of interest changed 
     return state.getU() / coordinate.getSpeedValue(state);
+    
+    
+    getModel().getMultibodySystem().getMatterSubsystem()
+        .multiplyBySystemJacobianTranspose(s_ma, _bodyForces, _generalizedForces);
 }
 
 } // end of namespace OpenSim
