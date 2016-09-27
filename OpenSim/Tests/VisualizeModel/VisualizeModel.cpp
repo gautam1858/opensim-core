@@ -64,7 +64,7 @@ int main(int argc, char **argv)
         // Add the muscle controller to the model
     
         osimModel.addController(muscleController);
-        VectorXd MIFs(NBMUSCLES);
+        IFs(NBMUSCLES);
         const Set<Muscle> &muscleSet = osimModel.getMuscles();
         if (muscleSet.getSize() != NBMUSCLES)
             throw std::runtime_error("Number of muscles ");
